@@ -1,0 +1,7 @@
+---
+registry_url: "{{ lookup('env', 'REGISTRY_URL') | default('https://index.docker.io/v1/', true) }}"
+docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
+docker_pass: "{{ lookup('env', 'DOCKER_PASS') }}"
+container_name: "{{ lookup('env', 'CONTAINER_NAME') | default('App', true) }}"
+docker_image: "{{ lookup('env', 'DOCKER_IMAGE') | default('nginxdemos/hello', true) }}"
+published_ports: "{{ lookup('env', 'PUBLISHED_PORTS') | default('80:80', true) }}"

@@ -1,0 +1,20 @@
+---
+- name: Deployment | Include Distro Variables
+  ansible.builtin.include_vars: "{{ ansible_distribution }}.yml"
+  tags: always
+
+- name: Deployment | Include Role Variables
+  ansible.builtin.include_vars: "../../pre-configure/vars/main.yml"
+  tags: always
+
+- name: Deployment
+  become: true
+  become_user: "{{ custom_user }}"
+  block:
+    - name: Deployment | Deploying Docker
+      ansible.builtin.import_tasks: application/app.yml
+
+  rescue:
+    - name: Deployment | Rescue
+      ansible.builtin.set_fact:
+        task_failed: true

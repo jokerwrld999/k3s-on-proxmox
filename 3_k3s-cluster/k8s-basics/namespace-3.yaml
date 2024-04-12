@@ -1,0 +1,8 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: namespace-3
+  annotations:
+    generated-by: yaml
+  labels:
+    name: namespace-3

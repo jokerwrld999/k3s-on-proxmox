@@ -1,0 +1,25 @@
+---
+
+profile: production
+
+exclude_paths:
+  - .cache/
+  - .github/
+  - /collections/
+  - .pre-commit-config.yaml
+  - role-template
+
+skip_list:
+  - name[template]
+  - internal-error
+  - no-handler
+  - latest[git]
+  - risky-file-permissions
+  - risky-shell-pipe
+  - no-changed-when
+  - package-latest
+  - literal-compare
+  - role-name
+  - command-instead-of-module
+  - command-instead-of-shell
+  - yaml[indentation]
