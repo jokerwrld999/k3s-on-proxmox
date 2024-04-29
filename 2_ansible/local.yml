@@ -1,4 +1,18 @@
 ---
+- name: Pre-run | Run local scripts
+  tags: always
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Pre-run | Copying SSH keys
+      ansible.builtin.shell: curl https://raw.githubusercontent.com/jokerwrld999/Scripting/main/tools/ssh/copy-ssh-keys.sh | bash > ./copy-ssh.log
+      changed_when: false
+
+    - name: Pre-run | Installing Ansible roles and collections
+      ansible.builtin.command: ansible-galaxy install -r requirements.yml
+      changed_when: false
+
 - name: Pre-run | Status | Set timer
   tags: always
   hosts: all
@@ -8,67 +22,49 @@
       ansible.builtin.set_fact:
         start_time: "{{ ansible_date_time.iso8601[:19] }}"
 
-# - name: Pre-run | Wait 300 seconds for port 22
-#   tags: always
+# - name: K3s HA Cluster
 #   hosts: all
 #   become: true
-#   gather_facts: false
-#   pre_tasks:
-#     - name: Pre-run | Wait 300 seconds for port 22
-#       tags: always
-#       ansible.builtin.wait_for:
-#         port: 22
-#         host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
-#         delay: 10
-#       connection: local
+#   vars_files:
+#     - main.yml
+#   tasks:
+#     - debug: msg="Working on..... {{ ansible_all_ipv4_addresses }}"
+#       tags: ipv4
+#       when:
+#         - inventory_hostname in groups["k3s_server_nodes"]
+#         - ansible_default_ipv4.address == server_node_ip
 
-- name: Pre-run | Updating packages
-  tags: always
-  hosts: all, !proxmox_servers
-  become: true
-  pre_tasks:
-    - name: Pre-run | Update package cache (arch, manjaro)
-      community.general.pacman:
-        update_cache: yes
-        upgrade: yes
-      changed_when: false
-      when: ansible_distribution == "Archlinux"
+#     - name: Pre-configuring servers
+#       block:
+#         - name: Include bootstrap role
+#           ansible.builtin.include_role:
+#             name: jokerwrld999.bootstrap
+#           tags: lxc, test
 
-    - name: Pre-run | Update package cache (debian, etc)
-      ansible.builtin.apt:
-        update_cache: yes
-        cache_valid_time: 3600
-        name: "*"
-        state: latest
-      when: ansible_distribution in ["Debian", "Ubuntu"]
+#       rescue:
+#         - name: Pre-Configuration | Rescue
+#           ansible.builtin.set_fact:
+#             task_failed: true
 
-    - name: Pre-run | Update package cache (fedora/rocky)
-      ansible.builtin.dnf:
-        update_only: yes
-        name: "*"
-        state: latest
-      changed_when: false
-      when: ansible_distribution in ["Fedora", "Rocky"]
-
-- name: Pre-configuring hosts
-  hosts: all
-  become: true
-  roles:
-    - pre-configure
-
-- name: Deploying Docker Application
-  hosts: aws_ec2
-  become: true
-  roles:
-    - role: deploy-docker-app
-      tags: deploy-docker-app
-
-- name: Post-run | Cleaning up hosts
-  tags: always
+- name: K3s HA Cluster
   hosts: all
   become: true
   vars_files:
-    - roles/pre-configure/vars/main.yml
+    - main.yml
+  roles:
+    - k3s_ha_cluster
+
+# - name: Setting up workstation servers
+#   hosts: workstation
+#   become: true
+#   become_user: "{{ custom_user }}"
+#   roles:
+#     - workstation
+
+- name: Post-run | Cleaning up servers
+  tags: always
+  hosts: all
+  become: true
   tasks:
     - name: Post-cleanup | Packages (arch)
       ansible.builtin.shell: |
@@ -97,13 +93,12 @@
       ansible.builtin.set_fact:
         runtime: "{{ ((ansible_date_time.iso8601[:19] | to_datetime('%Y-%m-%dT%H:%M:%S')) - (start_time | to_datetime('%Y-%m-%dT%H:%M:%S'))) }}"
 
-    - name: Telegram | Send completion alert
-      ansible.builtin.import_tasks: roles/pre-configure/tasks/alerts/completion_alert.yml
-      when:
-        - task_failed is not defined
-
-    - name: Telegram | Send failure alert
-      ansible.builtin.import_tasks: roles/pre-configure/tasks/alerts/failure_alert.yml
-      when:
-        - task_failed is defined
-        - task_failed == true
+# - name: Telegram Alerts | Send alerts
+#   tags: always
+#   hosts: all
+#   vars_files:
+#     - main.yml
+#   tasks:
+#     - name: Include bootstrap role
+#       ansible.builtin.include_role:
+#         name: jokerwrld999.telegram-alerts

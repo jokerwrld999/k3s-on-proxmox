@@ -1,11 +1,11 @@
-resource "proxmox_vm_qemu" "k3s_agent" {
+resource "proxmox_vm_qemu" "k3s_agent_node" {
   # VM General Settings
   count       = 3
   target_node = "z640"
   vmid        = "60${count.index + 1}"
   name        = "k3s-agent-${count.index + 1}"
   desc        = "[Terrafrom] K3s Agent #${count.index + 1}"
-  tags        = "k3s-agents"
+  tags        = "k3s-agent"
 
   # VM Advanced General Settings
   onboot   = true
@@ -62,11 +62,11 @@ resource "proxmox_vm_qemu" "k3s_agent" {
   EOF
 }
 
-resource "local_file" "k3s_agent_nodes" {
+resource "local_file" "k3s_agent_node_ips" {
   filename = "../2_ansible/inventory/k3s_agent_nodes"
   content  = <<-EOF
     [k3s_agent_nodes]
-    %{for ip in proxmox_vm_qemu.k3s_agent~}
+    %{for ip in proxmox_vm_qemu.k3s_agent_node~}
     ${regex("[0-9.]+", ip.ipconfig0)}
     %{endfor~}
   EOF

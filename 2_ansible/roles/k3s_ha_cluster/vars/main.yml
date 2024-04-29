@@ -1,0 +1,5 @@
+---
+# Server Configuration
+haproxy_lb_ip: "10.10.10.40"
+server_node_ip: 10.10.10.51
+server_token: 'am9rZXJ3cmxkJ3NrM3NvbnByb3g='

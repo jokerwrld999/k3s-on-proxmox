@@ -1,0 +1,24 @@
+---
+- name: K3s | Server Nodes | Initialize Cluster
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | K3S_TOKEN="{{ server_token }}" INSTALL_K3S_EXEC="server --cluster-init --tls-san {{ haproxy_lb_ip }}" sh -s -
+  args:
+    creates: /etc/systemd/system/k3s.service
+  when:
+    - ansible_default_ipv4.address == server_node_ip
+
+- name: K3s | Server Nodes | Connect To Cluster
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --cluster-init --token {{ server_token }} --server https://{{ server_node_ip }}:6443 --tls-san {{ haproxy_lb_ip }}" sh -s -
+  args:
+    creates: /etc/systemd/system/k3s.service
+  when:
+    - ansible_default_ipv4.address != server_node_ip
+
+- name: K3s | Server Nodes | Get Service Facts
+  ansible.builtin.service_facts:
+
+- name: K3s | Server Nodes | Ensure K3s Server Is Running
+  ansible.builtin.fail:
+    msg: K3s Service is not running.
+  when: ansible_facts.services["k3s.service"] is not defined or ansible_facts.services["k3s.service"]["state"] != "running"

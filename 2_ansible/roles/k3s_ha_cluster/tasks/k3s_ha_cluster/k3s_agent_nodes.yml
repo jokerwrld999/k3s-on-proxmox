@@ -1,0 +1,15 @@
+---
+- name: K3s | Agent Nodes | Connect To Cluster
+  ansible.builtin.shell: |
+    # curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server https://{{ haproxy_lb_ip }}:6443" K3S_TOKEN="{{ server_token }}" sh -
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent --server https://{{ server_node_ip }}:6443" K3S_TOKEN="{{ server_token }}" sh -
+  args:
+    creates: /etc/systemd/system/k3s-agent.service
+
+- name: K3s | Agent Nodes | Get Service Facts
+  ansible.builtin.service_facts:
+
+- name: K3s | Agent Nodes | Ensure K3s Agent Is Running
+  ansible.builtin.fail:
+    msg: K3s Service is not running.
+  when: ansible_facts.services["k3s-agent.service"] is not defined or ansible_facts.services["k3s-agent.service"]["state"] != "running"

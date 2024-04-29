@@ -1,14 +1,12 @@
-# Ansible Template Playbook
+# Linux Automation With Ansible
 
-This Ansible template provides a base for provisioning Linux systems with
-pre-updated distros and necessary tweaks. It streamlines the process of adding
-desired software and bootstrapping your servers.
+Provision your Linux Servers and Desktops with this playbook.
 
 ## Pre-commit Commands
 
 ```
 pre-commit install
-pre-commit run -a
+pre-commit run -a -c .config/.pre-commit-config.yaml
 ```
 
 ## Setting SSH Key-Based Authentication
@@ -34,7 +32,7 @@ ssh-keygen -t ed25519 -C "ansible"
 4. Copy the ssh key to the server(s)
 
 ```
-ssh-copy-id -i ~/.ssh/ansible.pub
+ssh-copy-id -i ~/.ssh/ansible.pub <IP Address>
 ```
 
 ## Export Env Variables
@@ -43,13 +41,6 @@ ssh-copy-id -i ~/.ssh/ansible.pub
 
 ```
 export CUSTOM_USER=
-
-export REGISTRY_URL=
-export CONTAINER_NAME=
-export DOCKER_IMAGE=
-export PUBLISHED_PORTS=
-export DOCKER_USERNAME=
-export DOCKER_PASS=
 ```
 
 - OR Modify the variables in `roles/pre-configure/vars/main.yml`

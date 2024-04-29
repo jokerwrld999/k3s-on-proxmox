@@ -1,4 +1,4 @@
-resource "proxmox_vm_qemu" "k3s_lb" {
+resource "proxmox_vm_qemu" "k3s_lb_node" {
   # VM General Settings
   count       = 2
   target_node = "z640"
@@ -62,11 +62,11 @@ resource "proxmox_vm_qemu" "k3s_lb" {
   EOF
 }
 
-resource "local_file" "k3s_lb_nodes" {
+resource "local_file" "k3s_lb_node_ips" {
   filename = "../2_ansible/inventory/k3s_lb_nodes"
   content  = <<-EOF
-    [k3s_server_nodes]
-    %{for ip in proxmox_vm_qemu.k3s_lb~}
+    [k3s_lb_nodes]
+    %{for ip in proxmox_vm_qemu.k3s_lb_node~}
     ${regex("[0-9.]+", ip.ipconfig0)}
     %{endfor~}
   EOF
