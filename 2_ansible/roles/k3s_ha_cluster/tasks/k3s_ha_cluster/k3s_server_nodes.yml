@@ -20,5 +20,5 @@
 
 - name: K3s | Server Nodes | Ensure K3s Server Is Running
   ansible.builtin.fail:
-    msg: K3s Service is not running.
+    msg: K3s Server Service is not running.
   when: ansible_facts.services["k3s.service"] is not defined or ansible_facts.services["k3s.service"]["state"] != "running"

@@ -61,13 +61,3 @@ resource "proxmox_vm_qemu" "k3s_lb_node" {
     ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICJonXfGjkmIS7kLLpVKgvkPx7CKDKChFB+cnna2zWNG
   EOF
 }
-
-resource "local_file" "k3s_lb_node_ips" {
-  filename = "../2_ansible/inventory/k3s_lb_nodes"
-  content  = <<-EOF
-    [k3s_lb_nodes]
-    %{for ip in proxmox_vm_qemu.k3s_lb_node~}
-    ${regex("[0-9.]+", ip.ipconfig0)}
-    %{endfor~}
-  EOF
-}

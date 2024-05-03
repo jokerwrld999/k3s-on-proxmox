@@ -11,5 +11,5 @@
 
 - name: K3s | Agent Nodes | Ensure K3s Agent Is Running
   ansible.builtin.fail:
-    msg: K3s Service is not running.
+    msg: K3s Agent Service is not running.
   when: ansible_facts.services["k3s-agent.service"] is not defined or ansible_facts.services["k3s-agent.service"]["state"] != "running"
