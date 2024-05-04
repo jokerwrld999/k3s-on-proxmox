@@ -54,13 +54,6 @@
   roles:
     - k3s_ha_cluster
 
-# - name: Setting up workstation servers
-#   hosts: workstation
-#   become: true
-#   become_user: "{{ custom_user }}"
-#   roles:
-#     - workstation
-
 - name: Post-run | Cleaning up servers
   tags: always
   hosts: all

@@ -31,3 +31,4 @@ vars:
     ansible_user: ${proxmox_vm_qemu.k3s_rancher_node[0].ciuser}
 EOF
 }
+# ${substr(regex("[0-9.]+", ip.ipconfig0), -1, 0) == "1" ? "master: true" : ""}
