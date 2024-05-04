@@ -1,6 +1,11 @@
 ---
 - name: Server Configuration
   block:
+    - name: K3s HA Proxy | LoadBalancer Nodes
+      ansible.builtin.import_tasks: k3s_ha_proxy/k3s_ha_proxy_nodes.yml
+      when:
+        - inventory_hostname in groups["k3s_lb_nodes"]
+
     - name: K3s HA Cluster | Server Nodes
       ansible.builtin.import_tasks: k3s_ha_cluster/k3s_server_nodes.yml
       when:

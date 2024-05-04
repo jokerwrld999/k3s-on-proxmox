@@ -36,4 +36,14 @@ telegram_token: !vault |
 
 
 # **** K3s
-server_node_ip: 10.10.10.51
+haproxy_lb_ip: "10.10.10.40"
+
+lb_1_node_ip: "10.10.10.41"
+lb_1_keepalived_state: "MASTER"
+lb_1_keepalived_priority: "200"
+
+lb_2_node_ip: "10.10.10.42"
+lb_2_keepalived_state: "BACKUP"
+lb_2_keepalived_priority: "100"
+
+k3s_server_node_ip: "10.10.10.51"

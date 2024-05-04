@@ -1,0 +1,14 @@
+frontend k3s-frontend
+    bind *:6443
+    mode tcp
+    option tcplog
+    default_backend k3s-backend
+
+backend k3s-backend
+    mode tcp
+    option tcp-check
+    balance roundrobin
+    default-server inter 10s downinter 5s
+    server k3s-server-1 {{ k3s_server_1 | default("10.10.10.51") }}:6443 check
+    server k3s-server-2 {{ k3s_server_2 | default("10.10.10.52") }}:6443 check
+    server k3s-server-3 {{ k3s_server_3 | default("10.10.10.53") }}:6443 check

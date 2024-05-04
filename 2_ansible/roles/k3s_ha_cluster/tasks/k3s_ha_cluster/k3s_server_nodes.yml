@@ -5,15 +5,15 @@
   args:
     creates: /etc/systemd/system/k3s.service
   when:
-    - ansible_default_ipv4.address == server_node_ip
+    - ansible_default_ipv4.address == k3s_server_node_ip
 
 - name: K3s | Server Nodes | Connect To Cluster
   ansible.builtin.shell: |
-    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --cluster-init --token {{ server_token }} --server https://{{ server_node_ip }}:6443 --tls-san {{ haproxy_lb_ip }}" sh -s -
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --cluster-init --token {{ server_token }} --server https://{{ k3s_server_node_ip }}:6443 --tls-san {{ haproxy_lb_ip }}" sh -s -
   args:
     creates: /etc/systemd/system/k3s.service
   when:
-    - ansible_default_ipv4.address != server_node_ip
+    - ansible_default_ipv4.address != k3s_server_node_ip
 
 - name: K3s | Server Nodes | Get Service Facts
   ansible.builtin.service_facts:
