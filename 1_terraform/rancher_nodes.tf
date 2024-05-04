@@ -57,7 +57,5 @@ resource "proxmox_vm_qemu" "k3s_rancher_node" {
   ciuser = "root"
 
   # (Optional) Add your SSH KEY
-  sshkeys = <<-EOF
-    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICJonXfGjkmIS7kLLpVKgvkPx7CKDKChFB+cnna2zWNG
-  EOF
+  sshkeys = var.ssh_public_key
 }
