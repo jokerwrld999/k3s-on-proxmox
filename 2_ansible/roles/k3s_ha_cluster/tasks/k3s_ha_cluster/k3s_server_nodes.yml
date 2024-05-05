@@ -4,6 +4,7 @@
     curl -sfL https://get.k3s.io | K3S_TOKEN="{{ server_token }}" INSTALL_K3S_EXEC="server --cluster-init --tls-san {{ haproxy_lb_ip }}" sh -s -
   args:
     creates: /etc/systemd/system/k3s.service
+  register: cluster_setup
   when:
     - ansible_default_ipv4.address == k3s_server_node_ip
 
@@ -22,3 +23,21 @@
   ansible.builtin.fail:
     msg: K3s Server Service is not running.
   when: ansible_facts.services["k3s.service"] is not defined or ansible_facts.services["k3s.service"]["state"] != "running"
+
+- name: K3s Remote Kubectl | Save K3s Config
+  ansible.builtin.fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ~/.kube/k3s.yaml
+    flat: yes
+  register: kubeconfig
+  when:
+    - ansible_default_ipv4.address == k3s_server_node_ip
+    - cluster_setup is changed
+
+- name: K3s Remote Kubectl | Update K3s Config
+  become: false
+  ansible.builtin.command: sed -i 's/127.0.0.1/{{ haproxy_lb_ip }}/' ~/.kube/k3s.yaml
+  delegate_to: localhost
+  when:
+    - ansible_default_ipv4.address == k3s_server_node_ip
+    - kubeconfig is changed
