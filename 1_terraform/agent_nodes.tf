@@ -10,6 +10,7 @@ resource "proxmox_vm_qemu" "k3s_agent_node" {
   # VM Advanced General Settings
   onboot   = true
   vm_state = "running"
+  # vm_state = "stopped"
 
   # VM OS Settings
   clone   = "ubuntu-cloud"

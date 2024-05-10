@@ -24,6 +24,15 @@
     msg: K3s Server Service is not running.
   when: ansible_facts.services["k3s.service"] is not defined or ansible_facts.services["k3s.service"]["state"] != "running"
 
+- name: K3s Remote Kubectl | Stat k3s.yaml file
+  become: false
+  ansible.builtin.stat:
+    path: ~/.kube/k3s.yaml
+  register: k3s_config_file
+  delegate_to: localhost
+  when:
+    - ansible_default_ipv4.address == k3s_server_node_ip
+
 - name: K3s Remote Kubectl | Save K3s Config
   ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
@@ -32,7 +41,7 @@
   register: kubeconfig
   when:
     - ansible_default_ipv4.address == k3s_server_node_ip
-    - cluster_setup is changed
+    - cluster_setup is changed or k3s_config_file.stat.exists == false
 
 - name: K3s Remote Kubectl | Update K3s Config
   become: false
