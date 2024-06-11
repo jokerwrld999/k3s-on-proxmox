@@ -50,7 +50,7 @@
   hosts: all
   become: true
   vars_files:
-    - main.yml
+    - vars/main.yml
   roles:
     - k3s_ha_cluster
 
@@ -86,12 +86,12 @@
       ansible.builtin.set_fact:
         runtime: "{{ ((ansible_date_time.iso8601[:19] | to_datetime('%Y-%m-%dT%H:%M:%S')) - (start_time | to_datetime('%Y-%m-%dT%H:%M:%S'))) }}"
 
-# - name: Telegram Alerts | Send alerts
-#   tags: always
-#   hosts: all
-#   vars_files:
-#     - main.yml
-#   tasks:
-#     - name: Include bootstrap role
-#       ansible.builtin.include_role:
-#         name: jokerwrld999.telegram-alerts
+- name: Telegram Alerts | Send alerts
+  tags: always
+  hosts: all
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Include bootstrap role
+      ansible.builtin.include_role:
+        name: jokerwrld999.telegram-alerts

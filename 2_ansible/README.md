@@ -26,7 +26,7 @@ ssh-copy-id -i ~/.ssh/id_ed25519.pub <IP Address>
 3. Generate an ssh key that’s going to be specifically used for Ansible
 
 ```
-ssh-keygen -t ed25519 -C "ansible"
+ssh-keygen -t ed25519 -C "ansible" -f ~/.ssh/ansible
 ```
 
 4. Copy the ssh key to the server(s)
